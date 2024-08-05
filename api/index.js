@@ -147,7 +147,7 @@ app.put("/booking/:id", async (req, res)=>{
   }
 });
 
-app.get("/bookings/:id", async(req, res)=>{
+app.get("/booking/:id", async(req, res)=>{
   const client = await pool.connect();
   try{
     const query = `SELECT * FROM BOOKINGS where id = $1`;
