@@ -98,51 +98,41 @@ app.post("/booking", async(req, res)=>{
 })
 
 
-app.put("/booking/:id", async (req, res)=>{
+app.put("/booking/:id", async (req, res) => {
   const id = req.params.id;
   const client = await pool.connect();
 
-  try{
-    const { title, description, date, time, phone_number, email } = req.body;
-
-    const obj = {
-      title,
-      description,
-      date,
-      time,
-      phone_number,
-      email,
-    }
-
-    const param = [obj.title, obj.description, obj.date, obj.time, obj.phone_number, obj.email];
-
-
-
+  try {
+    //Check if booking exists
     const queryBooking = "SELECT * FROM BOOKINGS WHERE id = $1";
     const bookingResult = await client.query(queryBooking, [id]);
 
-    if(bookingResult.rows.length == 0){
+    if (bookingResult.rows.length == 0) {
       return res.status(404).json({
-        message:"Post not found"
+        message: "Booking not found"
       })
     }
 
     //Update the specify booking
     const query = `UPDATE BOOKINGS 
     SET title =$1, description = $2, date = $3, time =$4, phone_number =$5, email =$6 
+    WHERE id = $7
     RETURNING *
-    ;`
+    `;
 
+    const { title, description, date, time, phone_number, email } = req.body;
+    
+    const param = [title, description, date, time, phone_number, email, id];
 
     const result = await client.query(query, param);
 
-    res.status(200).json(result)
+    res.status(200).json(result.rows[0]);
 
-  } catch(error){
+  } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
 
-  } finally{
+  } finally {
     client.release();
   }
 });
