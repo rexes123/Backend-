@@ -25,7 +25,7 @@ const pool = new Pool({
   ssl: {
     //connect to ssl
     // require: true,
-    
+
     //Whether the client should validate the server's SSL
     //For production environments, it is generally advisable to set up SSL corrently and validate certificates
     //to ensure secure and trusted connection. iF you are in development or testing environment, yoou might temporarily use 
@@ -65,12 +65,12 @@ app.get("/bookings", async (req, res) => {
   }
 });
 
-app.post("/booking", async(req, res)=>{
+app.post("/booking", async (req, res) => {
   const client = await pool.connect();
 
-  try{
+  try {
 
-    const {title, description, date, time, phoneNum, email} = req.body;
+    const { title, description, date, time, phoneNum, email, uid } = req.body;
 
     const obj = {
       title,
@@ -79,23 +79,27 @@ app.post("/booking", async(req, res)=>{
       time,
       phoneNum,
       email,
+      uid
     }
 
-    const param =[obj.title, obj.description, obj.date, obj.time, obj.phoneNum, obj.email];
+    const param = [obj.title, obj.description, obj.date, obj.time, obj.phoneNum, obj.email, obj.uid];
 
-    const query = "INSERT INTO BOOKINGS(title, description, date, time, phone_number, email) VALUES($1, $2, $3, $4, $5, $6) RETURNING id"
+    const query = "INSERT INTO BOOKINGS(title, description, date, time, phone_number, email, uid) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id"
 
     const execute = await client.query(query, param)
 
     // Retrieve the if of newly inserted post and assign it into obj
-    obj.id= execute.rows[0].id;
+    obj.id = execute.rows[0].id;
     res.status(201).json(obj);
-  } catch(error){
+  } catch (error) {
     console.error(error);
-  } finally{
+  } finally {
     client.release();
   }
 })
+
+//Get booking with specific id
+
 
 
 app.put("/booking/:id", async (req, res) => {
@@ -115,14 +119,14 @@ app.put("/booking/:id", async (req, res) => {
 
     //Update the specify booking
     const query = `UPDATE BOOKINGS 
-    SET title =$1, description = $2, date = $3, time =$4, phone_number =$5, email =$6 
-    WHERE id = $7
+    SET title =$1, description = $2, date = $3, time =$4, phone_number =$5, email =$6, uid= $7 
+    WHERE id = $8
     RETURNING *
     `;
 
-    const { title, description, date, time, phone_number, email } = req.body;
+    const { title, description, date, time, phone_number, email, uid } = req.body;
     
-    const param = [title, description, date, time, phone_number, email, id];
+    const param = [title, description, date, time, phone_number, email, uid, id];
 
     const result = await client.query(query, param);
 
@@ -137,8 +141,22 @@ app.put("/booking/:id", async (req, res) => {
   }
 });
 
+app.get("/booking/:id", async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const query = `SELECT * FROM BOOKINGS where id = $1`;
+    const param = [req.params.id];
+    const result = await client.query(query, param);
+    res.status(200).json(result.rows);
 
-app.get("/bookings/user/:uid", async (req, res)=>{
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    client.release();
+  }
+});
+
+ app.get("/bookings/user/:uid", async (req, res)=>{
    const client = await pool.connect();
 
    try{
@@ -154,36 +172,21 @@ app.get("/bookings/user/:uid", async (req, res)=>{
    }
  })
 
-app.get("/booking/:id", async(req, res)=>{
-  const client = await pool.connect();
-  try{
-    const query = `SELECT * FROM BOOKINGS where id = $1`;
-    const param = [req.params.id];
-    const result = await client.query(query, param);
-    res.status(200).json(result.rows);
 
-  } catch(error){
-    console.error(error.message);
-  } finally{
-    client.release();
-  }
-});
-
-
-app.delete("/booking/:id", async (req, res)=>{
+app.delete("/booking/:id", async (req, res) => {
   const id = req.params.id;
   const client = await pool.connect();
 
-  try{
-    const query =`DELETE FROM BOOKINGS WHERE id = $1 RETURNING *`;
+  try {
+    const query = `DELETE FROM BOOKINGS WHERE id = $1 RETURNING *`;
     //Prepare param for query
     const param = [id]
     const execute = await client.query(query, param)
     res.status(200).json(execute.rows);
-  } catch(error){
+  } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
-  } finally{
+  } finally {
     client.release();
   }
 
