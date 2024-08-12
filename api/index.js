@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
+// const { verifyToken } = require('../firebaseAdmin');
 
 const { Pool } = require("pg");
 const cors = require("cors");
@@ -45,18 +46,18 @@ const pool = new Pool({
 })();
 
 
-const authorizeAdminEmail = (req, res, next)=>{
-  //Check if user email matches the email detail 
-  if (req.user && req.user.email === 'admin@gmail.com'){
-    // if email is admin@gmail.com, proceed to the next middleware/route
-    next();
-  } else {
-    //
-    res.sendStatus(403)
-  }
-}                                                                                                                                         
+// const authorizeAdminEmail = (req, res, next)=>{
+//   //Check if user email matches the email detail 
+//   if (req.user && req.user.email === 'admin@gmail.com'){
+//     // if email is admin@gmail.com, proceed to the next middleware/route
+//     next();
+//   } else {
+//     //
+//     res.sendStatus(403)
+//   }
+// }                                                                                                                                         
  //fetch all post
-app.get("/bookings", authorizeAdminEmail, async (req, res) => {
+app.get("/bookings", async (req, res) => {
   const client = await pool.connect();
   try {
     //SQL query
