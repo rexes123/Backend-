@@ -44,8 +44,19 @@ const pool = new Pool({
   }
 })();
 
-//fetch all post
-app.get("/bookings", async (req, res) => {
+
+const authorizeAdminEmail = (req, res, next)=>{
+  //Check if user email matches the email detail 
+  if (req.user && req.user.email === 'admin@gmail.com'){
+    // if email is admin@gmail.com, proceed to the next middleware/route
+    next();
+  } else {
+    //
+    res.sendStatus(403)
+  }
+}                                                                                                                                         
+ //fetch all post
+app.get("/bookings", authorizeAdminEmail, async (req, res) => {
   const client = await pool.connect();
   try {
     //SQL query
