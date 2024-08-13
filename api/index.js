@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const app = express();
-// const { verifyToken } = require('../firebaseAdmin');
 
 const { Pool } = require("pg");
 const cors = require("cors");
@@ -24,13 +23,6 @@ const pool = new Pool({
   connectionString: DATABASE_URL,
 
   ssl: {
-    //connect to ssl
-    // require: true,
-
-    //Whether the client should validate the server's SSL
-    //For production environments, it is generally advisable to set up SSL corrently and validate certificates
-    //to ensure secure and trusted connection. iF you are in development or testing environment, yoou might temporarily use 
-    // 'rejectUnauthorized: false', but be sure a address for production deploymemts.
     rejectUnauthorized: false,
   },
 });
@@ -45,18 +37,6 @@ const pool = new Pool({
   }
 })();
 
-
-// const authorizeAdminEmail = (req, res, next)=>{
-//   //Check if user email matches the email detail 
-//   if (req.user && req.user.email === 'admin@gmail.com'){
-//     // if email is admin@gmail.com, proceed to the next middleware/route
-//     next();
-//   } else {
-//     //
-//     res.sendStatus(403)
-//   }
-// }                                                                                                                                         
- //fetch all post
 app.get("/bookings", async (req, res) => {
   const client = await pool.connect();
   try {
