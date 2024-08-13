@@ -76,7 +76,7 @@ app.post("/booking", async (req, res) => {
 
     const param = [obj.title, obj.description, obj.date, obj.time, obj.phoneNum, obj.email, obj.uid];
 
-    const query = "INSERT INTO BOOKINGS(title, description, date, time, phone_number, email, uid) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id"
+    const query = "INSERT INTO BOOKINGS(title, description, date, time, phoneNum, email, uid) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id"
 
     const execute = await client.query(query, param)
 
@@ -111,14 +111,14 @@ app.put("/booking/:id", async (req, res) => {
 
     //Update the specify booking
     const query = `UPDATE BOOKINGS 
-    SET title =$1, description = $2, date = $3, time =$4, phone_number =$5, email =$6, uid= $7 
+    SET title =$1, description = $2, date = $3, time =$4, phoneNum =$5, email =$6, uid= $7 
     WHERE id = $8
     RETURNING *
     `;
 
-    const { title, description, date, time, phone_number, email, uid } = req.body;
+    const { title, description, date, time, phoneNum, email, uid } = req.body;
     
-    const param = [title, description, date, time, phone_number, email, uid, id];
+    const param = [title, description, date, time, phoneNum, email, uid, id];
 
     const result = await client.query(query, param);
 
