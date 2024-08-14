@@ -133,28 +133,55 @@ app.put("/booking/:id", async (req, res) => {
   }
 });
 
- app.patch('/booking/:id', async (req, res)=>{
-   const id = req.params.id;
-   const { status } = req.body;
+//  app.patch('/booking/:id', async (req, res)=>{
+//    const id = req.params.id;
+//    const { status } = req.body;
 
-   const client = await pool.connect();
+//    const client = await pool.connect();
 
-   try{
-     //Update the status of the booking item to database
-    const execute = await client.query('UPDATE BOOKINGS SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
+//    try{
+//      //Update the status of the booking item to database
+//     const execute = await client.query('UPDATE BOOKINGS SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
 
-    if (execute.rows.length > 0){
+//     if (execute.rows.length > 0){
+//       res.status(200).json(execute.rows[0]);
+//     } else {
+//       res.status(404).json({error: 'Booking not found'});
+//     }
+//    } catch(error){
+//      console.error(error.message);
+//      res.status(500).send("Server Error");
+//    } finally{
+//     client.release();
+//    }
+//  })
+
+app.put('/booking/:id', async (req, res) => {
+  const id = req.params.id;
+  const { status } = req.body; // Only take the status field from the request body
+
+  const client = await pool.connect();
+
+  try {
+    // Update only the status of the booking item in the database
+    const execute = await client.query(
+      'UPDATE BOOKINGS SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+
+    if (execute.rows.length > 0) {
       res.status(200).json(execute.rows[0]);
     } else {
-      res.status(404).json({error: 'Booking not found'});
+      res.status(404).json({ error: 'Booking not found' });
     }
-   } catch(error){
-     console.error(error.message);
-     res.status(500).send("Server Error");
-   } finally{
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  } finally {
     client.release();
-   }
- })
+  }
+});
+
 
 app.get("/booking/:id", async (req, res) => {
   const client = await pool.connect();
