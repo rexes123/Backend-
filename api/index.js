@@ -133,6 +133,29 @@ app.put("/booking/:id", async (req, res) => {
   }
 });
 
+app.patch('/booking/:id', async (req, res)=>{
+  const id = req.params.id;
+  const { status } = req.body;
+
+  const client = await pool.connect();
+
+  try{
+    const getBookings = 'SELECT * FROM BOOKINGS WHERE id = $1';
+    await client.query(getBookings, [id]);
+
+
+    //Update the status of the booking
+    const updateStatus = 'UPDATE BOOKINGS SET status = $1 WHERE id = $2 RETURNING *';
+
+    await client.query(updateStatus, [status, id]);
+    
+    res.status(200).json(result.rows[0]);
+
+  } catch{
+
+  }
+})
+
 app.get("/booking/:id", async (req, res) => {
   const client = await pool.connect();
   try {
