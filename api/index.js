@@ -147,12 +147,13 @@ app.patch('/booking/:id', async (req, res)=>{
     //Update the status of the booking
     const updateStatus = 'UPDATE BOOKINGS SET status = $1 WHERE id = $2 RETURNING *';
 
-    await client.query(updateStatus, [status, id]);
+    const execute = await client.query(updateStatus, [status, id]);
     
-    res.status(200).json(result.rows[0]);
+    res.status(200).json(execute.rows[0]);
 
-  } catch{
-
+  } catch(error){
+    console.error(error.message);
+    res.status.send("Server Error");
   }
 })
 
