@@ -71,12 +71,13 @@ app.post("/booking", async (req, res) => {
       time,
       num,
       email,
-      uid
+      uid,
+      status: 'pending'
     }
 
-    const param = [obj.title, obj.description, obj.date, obj.time, obj.num, obj.email, obj.uid];
+    const param = [obj.title, obj.description, obj.date, obj.time, obj.num, obj.email, obj.uid. obj.status];
 
-    const query = "INSERT INTO BOOKINGS(title, description, date, time, num, email, uid) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id"
+    const query = "INSERT INTO BOOKINGS(title, description, date, time, num, email, uid, status) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 
     const execute = await client.query(query, param)
 
@@ -89,8 +90,6 @@ app.post("/booking", async (req, res) => {
     client.release();
   }
 })
-
-//Get booking with specific id
 
 
 
@@ -108,17 +107,18 @@ app.put("/booking/:id", async (req, res) => {
         message: "Booking not found"
       })
     }
-
+    
+    const { title, description, date, time, num, email, uid, status } = req.body;
+    
     //Update the specify booking
     const query = `UPDATE BOOKINGS 
-    SET title =$1, description = $2, date = $3, time =$4, num =$5, email =$6, uid= $7 
-    WHERE id = $8
+    SET title =$1, description = $2, date = $3, time =$4, num =$5, email =$6, uid= $7, status= $8 
+    WHERE id = $9
     RETURNING *
     `;
 
-    const { title, description, date, time, num, email, uid } = req.body;
     
-    const param = [title, description, date, time, num, email, uid, id];
+    const param = [title, description, date, time, num, email, uid, status, id];
 
     const result = await client.query(query, param);
 
