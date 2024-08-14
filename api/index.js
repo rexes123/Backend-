@@ -72,7 +72,7 @@ app.post("/booking", async (req, res) => {
       num,
       email,
       uid,
-      status: 'pending'
+      status: 'Pending'
     }
 
     const param = [obj.title, obj.description, obj.date, obj.time, obj.num, obj.email, obj.uid, obj.status];
