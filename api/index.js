@@ -75,7 +75,7 @@ app.post("/booking", async (req, res) => {
       status: 'pending'
     }
 
-    const param = [obj.title, obj.description, obj.date, obj.time, obj.num, obj.email, obj.uid. obj.status];
+    const param = [obj.title, obj.description, obj.date, obj.time, obj.num, obj.email, obj.uid, obj.status];
 
     const query = "INSERT INTO BOOKINGS(title, description, date, time, num, email, uid, status) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 
@@ -109,7 +109,7 @@ app.put("/booking/:id", async (req, res) => {
     }
     
     const { title, description, date, time, num, email, uid, status } = req.body;
-    
+
     //Update the specify booking
     const query = `UPDATE BOOKINGS 
     SET title =$1, description = $2, date = $3, time =$4, num =$5, email =$6, uid= $7, status= $8 
